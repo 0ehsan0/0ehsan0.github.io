@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ehsan  </title>
+    <title>Contact | @phrazel</title>
     <style>
         * {
             margin: 0;
@@ -11,9 +11,21 @@
             box-sizing: border-box;
         }
         body {
-            background: #000;
+            background: #050505;
             overflow: hidden;
             font-family: 'Courier New', Courier, monospace;
+            position: relative;
+        }
+        /* افکت خطوط تلویزیون‌های قدیمی روی کل صفحه */
+        body::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 100;
+            background-size: 100% 4px, 6px 100%;
+            pointer-events: none;
         }
         canvas {
             display: block;
@@ -21,7 +33,9 @@
             top: 0;
             left: 0;
             z-index: 1;
+            opacity: 0.25;
         }
+        /* باکس اصلی وسط صفحه */
         .content {
             position: absolute;
             top: 50%;
@@ -29,64 +43,66 @@
             transform: translate(-50%, -50%);
             z-index: 2;
             text-align: center;
-            color: #fff;
-            background: rgba(0, 0, 0, 0.8);
-            padding: 30px 50px;
-            border-radius: 10px;
-            border: 1px solid #00ff00;
-            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+            color: #00ff00;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 40px 60px;
+            border-radius: 4px;
+            border: 2px solid #005500;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.1), inset 0 0 20px rgba(0, 255, 0, 0.2);
         }
         h1 {
             font-size: 2.5rem;
             color: #00ff00;
-            letter-spacing: 3px;
-            margin-bottom: 15px;
-            text-shadow: 0 0 10px #00ff00;
-        }
-        p {
-            font-size: 1.1rem;
-            color: #888;
+            letter-spacing: 2px;
             margin-bottom: 25px;
+            text-shadow: 0 0 15px #00ff00;
+            font-weight: 900;
         }
         .btn {
             display: inline-block;
             text-decoration: none;
-            color: #00ff00;
+            color: #000;
+            background: #00ff00;
             border: 1px solid #00ff00;
-            padding: 10px 25px;
+            padding: 14px 40px;
             font-weight: bold;
-            border-radius: 5px;
+            font-size: 1.1rem;
+            border-radius: 2px;
+            letter-spacing: 2px;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.4);
             transition: all 0.3s ease;
         }
         .btn:hover {
-            background: #00ff00;
-            color: #000;
-            box-shadow: 0 0 15px #00ff00;
+            background: transparent;
+            color: #00ff00;
+            box-shadow: 0 0 25px #00ff00;
             cursor: pointer;
         }
     </style>
 </head>
 <body>
 
+    <!-- بوم باران ماتریکس کدهای تیره سایبرپانک -->
     <canvas id="matrix"></canvas>
 
+    <!-- باکس ارتباط با شما -->
     <div class="content">
-        <h1>NeuVpn</h1>
-        <p>🔒 Secure Network Configuration Channel</p>
-        <a href="https://t.me/phrazel" target="_blank" class="btn">DM</a>
+        <h1>@phrazel</h1>
+        <a href="https://t.me/phrazel" target="_blank" class="btn">SEND MESSAGE</a>
     </div>
 
     <script>
+        // اسکریپت باران ماتریکس هگزادسیمال
         const canvas = document.getElementById('matrix');
         const ctx = canvas.getContext('2d');
 
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
-        const katakana = 'ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        const alphabet = katakana.split('');
+        const hex = '0123456789ABCDEF//X//SYSTEM//ERROR//';
+        const alphabet = hex.split('');
 
-        const fontSize = 16;
+        const fontSize = 14;
         const columns = canvas.width / fontSize;
 
         const rainDrops = [];
@@ -95,9 +111,10 @@
         }
 
         const draw = () => {
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillStyle = 'rgba(5, 5, 5, 0.06)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+            ctx.style = 'bold';
             ctx.fillStyle = '#00ff00';
             ctx.font = fontSize + 'px monospace';
 
@@ -105,7 +122,7 @@
                 const text = alphabet[Math.floor(Math.random() * alphabet.length)];
                 ctx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
 
-                if (rainDrops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                if (rainDrops[i] * fontSize > canvas.height && Math.random() > 0.985) {
                     rainDrops[i] = 0;
                 }
                 rainDrops[i]++;
@@ -117,7 +134,7 @@
             canvas.height = window.innerHeight;
         });
 
-        setInterval(draw, 30);
+        setInterval(draw, 33);
     </script>
 </body>
 </html>
