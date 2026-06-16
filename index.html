@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact | @phrazel</title>
+    <title>Singularity | @phrazel</title>
     <style>
         * {
             margin: 0;
@@ -11,20 +11,21 @@
             box-sizing: border-box;
         }
         body {
-            background: #050505;
+            background: #020205;
             overflow: hidden;
             font-family: 'Courier New', Courier, monospace;
             position: relative;
+            perspective: 1000px;
         }
-        /* افکت خطوط تلویزیون‌های قدیمی روی کل صفحه */
+        /* افکت نویز تیره روی کل فضا */
         body::before {
             content: " ";
             display: block;
             position: absolute;
             top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%);
             z-index: 100;
-            background-size: 100% 4px, 6px 100%;
+            background-size: 100% 4px;
             pointer-events: none;
         }
         canvas {
@@ -33,108 +34,187 @@
             top: 0;
             left: 0;
             z-index: 1;
-            opacity: 0.25;
         }
-        /* باکس اصلی وسط صفحه */
-        .content {
+        /* باکس هسته مرکزی داخل سیاه‌چاله */
+        .singularity-core {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            z-index: 2;
+            z-index: 10;
             text-align: center;
-            color: #00ff00;
-            background: rgba(0, 0, 0, 0.9);
-            padding: 40px 60px;
-            border-radius: 4px;
-            border: 2px solid #005500;
-            box-shadow: 0 0 30px rgba(0, 255, 0, 0.1), inset 0 0 20px rgba(0, 255, 0, 0.2);
+            padding: 40px;
+            border-radius: 50%;
+            width: 280px;
+            height: 280px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            /* افکت شیشه مات در افق رویداد سیاه‌چاله */
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(0, 255, 0, 0.15);
+            box-shadow: 0 0 40px rgba(0, 0, 0, 1), inset 0 0 30px rgba(0, 255, 0, 0.05);
+            transition: all 0.5s ease;
         }
         h1 {
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             color: #00ff00;
-            letter-spacing: 2px;
-            margin-bottom: 25px;
-            text-shadow: 0 0 15px #00ff00;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
             font-weight: 900;
         }
         .btn {
             display: inline-block;
             text-decoration: none;
-            color: #000;
-            background: #00ff00;
+            color: #00ff00;
+            background: rgba(0, 0, 0, 0.8);
             border: 1px solid #00ff00;
-            padding: 14px 40px;
+            padding: 12px 25px;
             font-weight: bold;
-            font-size: 1.1rem;
-            border-radius: 2px;
-            letter-spacing: 2px;
-            box-shadow: 0 0 15px rgba(0, 255, 0, 0.4);
-            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            border-radius: 20px;
+            letter-spacing: 1px;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.1);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         .btn:hover {
-            background: transparent;
-            color: #00ff00;
-            box-shadow: 0 0 25px #00ff00;
+            background: #00ff00;
+            color: #000;
+            box-shadow: 0 0 25px #00ff00, 0 0 50px rgba(0, 255, 0, 0.3);
+            transform: scale(1.05);
             cursor: pointer;
         }
     </style>
 </head>
 <body>
 
-    <!-- بوم باران ماتریکس کدهای تیره سایبرپانک -->
-    <canvas id="matrix"></canvas>
+    <!-- بوم شبیه‌ساز جاذبه سیاه‌چاله -->
+    <canvas id="blackholeCanvas"></canvas>
 
-    <!-- باکس ارتباط با شما -->
-    <div class="content">
+    <!-- هسته ثابت مرکزی -->
+    <div class="singularity-core">
         <h1>@phrazel</h1>
-        <a href="https://t.me/phrazel" target="_blank" class="btn">SEND MESSAGE</a>
+        <a href="https://t.me/phrazel" target="_blank" class="btn">ENTER VOID</a>
     </div>
 
     <script>
-        // اسکریپت باران ماتریکس هگزادسیمال
-        const canvas = document.getElementById('matrix');
+        const canvas = document.getElementById('blackholeCanvas');
         const ctx = canvas.getContext('2d');
 
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
 
-        const hex = '0123456789ABCDEF//X//SYSTEM//ERROR//';
-        const alphabet = hex.split('');
+        let centerX = width / 2;
+        let centerY = height / 2;
 
-        const fontSize = 14;
-        const columns = canvas.width / fontSize;
+        const particleCount = 400; // تعداد ذرات کدی
+        const particles = [];
+        const chars = ['0', '1', 'Ø', 'X', 'F', 'A', '7', '9', ' ', '•'];
 
-        const rainDrops = [];
-        for (let x = 0; x < columns; x++) {
-            rainDrops[x] = 1;
+        class Particle {
+            constructor() {
+                this.reset();
+                // توزیع رندوم اولیه در سراسر صفحه
+                this.angle = Math.random() * Math.PI * 2;
+                this.radius = Math.random() * (Math.max(width, height) / 2);
+            }
+
+            reset() {
+                this.angle = Math.random() * Math.PI * 2;
+                // شروع از لبه‌های بیرونی صفحه
+                this.radius = Math.max(width, height) / 2 + Math.random() * 100;
+                this.speed = 0.5 + Math.random() * 1.5; // سرعت حرکت به سمت مرکز
+                this.rotationSpeed = 0.01 + Math.random() * 0.02; // سرعت چرخش دایره‌ای
+                this.char = chars[Math.floor(Math.random() * chars.length)];
+                this.colorOpacity = 0.1;
+                this.fontSize = 10 + Math.random() * 8;
+            }
+
+            update() {
+                // کشیده شدن به سمت هسته مرکزی (کاهش شعاع)
+                this.radius -= this.speed;
+                // چرخش به دور مرکز
+                this.angle += this.rotationSpeed;
+
+                // درخشش بیشتر با نزدیک‌تر شدن به افق رویداد سیاه‌چاله
+                if (this.radius < 300 && this.radius > 140) {
+                    this.colorOpacity = (300 - this.radius) / 160;
+                } else if (this.radius >= 300) {
+                    this.colorOpacity = 0.15;
+                }
+
+                // اگر ذره بلعیده شد و به مرکز مطلق رسید، دوباره از بیرون متولد شود
+                if (this.radius <= 135) {
+                    this.reset();
+                }
+            }
+
+            draw() {
+                // محاسبه موقعیت کارتزینی از روی زاویه و شعاع
+                const x = centerX + Math.cos(this.angle) * this.radius;
+                const y = centerY + Math.sin(this.angle) * this.radius;
+
+                ctx.font = `${this.fontSize}px monospace`;
+                ctx.fillStyle = `rgba(0, 255, 0, ${this.colorOpacity})`;
+                ctx.fillText(this.char, x, y);
+            }
         }
 
-        const draw = () => {
-            ctx.fillStyle = 'rgba(5, 5, 5, 0.06)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        // ساخت ذرات اولیه
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(new Particle());
+        }
 
-            ctx.style = 'bold';
-            ctx.fillStyle = '#00ff00';
-            ctx.font = fontSize + 'px monospace';
+        // انیمیشن فریم‌ها
+        const animate = () => {
+            // افکت دنباله‌دار شدن ذرات ماتریکسی با لایه تیره مات
+            ctx.fillStyle = 'rgba(2, 2, 5, 0.15)';
+            ctx.fillRect(0, 0, width, height);
 
-            for (let i = 0; i < rainDrops.length; i++) {
-                const text = alphabet[Math.floor(Math.random() * alphabet.length)];
-                ctx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
+            // ایجاد هاله نوری بسیار ضعیف در افق سیاه‌چاله
+            const gradient = ctx.createRadialGradient(centerX, centerY, 135, centerX, centerY, 200);
+            gradient.addColorStop(0, 'rgba(0, 0, 0, 1)');
+            gradient.addColorStop(0.5, 'rgba(0, 255, 0, 0.03)');
+            gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 200, 0, Math.PI * 2);
+            ctx.fill();
 
-                if (rainDrops[i] * fontSize > canvas.height && Math.random() > 0.985) {
-                    rainDrops[i] = 0;
-                }
-                rainDrops[i]++;
-            }
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+
+            requestAnimationFrame(animate);
         };
 
+        // هماهنگی با تغییر سایز مرورگر یا چرخش گوشی
         window.addEventListener('resize', () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            centerX = width / 2;
+            centerY = height / 2;
         });
 
-        setInterval(draw, 33);
+        // تاثیر حرکت موس روی مرکز ثقل سیاه‌چاله
+        window.addEventListener('mousemove', (e) => {
+            // انحراف بسیار جزیی مرکز جاذبه به سمت موس برای زنده شدن صفحه
+            centerX = (width / 2) + (e.clientX - width / 2) * 0.05;
+            centerY = (height / 2) + (e.clientY - height / 2) * 0.05;
+            
+            const core = document.querySelector('.singularity-core');
+            if(core) {
+                core.style.left = `${centerX}px`;
+                core.style.top = `${centerY}px`;
+            }
+        });
+
+        animate();
     </script>
 </body>
 </html>
