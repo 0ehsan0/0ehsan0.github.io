@@ -8,37 +8,32 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, message: 'لینک ارسال نشده است' }, { status: 400 });
     }
 
-    // ۱. تنظیم ورودی برای ارسال به Apify
-    const input = {
-      "tiktokUrls": [url],
-      "apiVersion": "Musically",
-      "proxySettings": { "useApifyProxy": true }
-    };
-
-    // ۲. ارسال درخواست به تیک‌تاک دانلودر در Apify
-    // به جای YOUR_APIFY_TOKEN باید توکن اکانت خودتان را بگذارید
-    const response = await fetch('https://api.apify.com/v2/acts/wilcode~fast-tiktok-downloader-api/run-sync-get-dataset-items?token=YOUR_APIFY_TOKEN', {
+    // ۱. ارسال لینک تیک‌تاک به API اختصاصی SnapTik برای پردازش
+    const snapTikResponse = await fetch('https://api.snaptik.cx/api/download', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(input)
+      headers: {
+        'Content-Type': 'application/json',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+      },
+      body: JSON.stringify({ url: url })
     });
 
-    const result = await response.json();
+    const result = await snapTikResponse.json();
 
-    // ۳. بررسی موفقیت‌آمیز بودن و ارسال دیتای تیک‌تاک به فرانت‌اند سایت
-    if (result && result[0] && result[0].success) {
+    // ۲. استخراج لینک‌های دانلود مستقیم و بدون واترمارک از پاسخ SnapTik
+    if (result && result.success && result.data) {
       return NextResponse.json({
         success: true,
-        title: result[0].data.description,
-        video: result[0].data.media.videoHD[0],
-        audio: result[0].data.media.music,
-        author: result[0].data.creator.name
+        title: result.data.title || 'TikTok Video',
+        video: result.data.video_hd || result.data.video || result.data.links[0], // لینک مستقیم ویدیو بدون واترمارک
+        audio: result.data.audio || result.data.music, // لینک موزیک
+        author: result.data.author?.name || 'TikTok User'
       });
     }
 
-    return NextResponse.json({ success: false, message: 'خطا در دریافت اطلاعات از تیک‌تاک' }, { status: 500 });
+    return NextResponse.json({ success: false, message: 'SnapTik نتوانست ویدیو را پردازش کند' }, { status: 500 });
 
   } catch (error) {
-    return NextResponse.json({ success: false, message: 'خطای سرور' }, { status: 500 });
+    return NextResponse.json({ success: false, message: 'خطای سرور در ارتباط با SnapTik' }, { status: 500 });
   }
 }
