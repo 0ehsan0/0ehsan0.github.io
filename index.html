@@ -1,220 +1,123 @@
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Singularity | @phrazel</title>
+    <title>NEUXP | Advanced Core Console</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        body {
-            background: #020205;
+        body, html {
+            width: 100%;
+            height: 100%;
             overflow: hidden;
-            font-family: 'Courier New', Courier, monospace;
-            position: relative;
-            perspective: 1000px;
-        }
-        /* افکت نویز تیره روی کل فضا */
-        body::before {
-            content: " ";
-            display: block;
-            position: absolute;
-            top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%);
-            z-index: 100;
-            background-size: 100% 4px;
-            pointer-events: none;
+            background-color: #030307;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            user-select: none;
         }
         canvas {
             display: block;
             position: absolute;
-            top: 0;
-            left: 0;
+            top: 0; left: 0;
+            width: 100% !important;
+            height: 100% !important;
             z-index: 1;
         }
-        /* باکس هسته مرکزی داخل سیاه‌چاله */
-        .singularity-core {
+
+        /* 🌌 پنل شیشه‌ای فوق مدرن و سه‌بعدی متحرک */
+        .network-panel {
             position: absolute;
-            top: 50%;
-            left: 50%;
+            top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            z-index: 10;
-            text-align: center;
-            padding: 40px;
-            border-radius: 50%;
-            width: 280px;
-            height: 280px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            /* افکت شیشه مات در افق رویداد سیاه‌چاله */
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            border: 1px solid rgba(0, 255, 0, 0.15);
-            box-shadow: 0 0 40px rgba(0, 0, 0, 1), inset 0 0 30px rgba(0, 255, 0, 0.05);
-            transition: all 0.5s ease;
+            z-index: 15; 
+            padding: 40px; 
+            border-radius: 28px;
+            background: rgba(6, 6, 11, 0.45);
+            backdrop-filter: blur(30px); 
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 75, 0, 0.18);
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.95), inset 0 0 30px rgba(255, 75, 0, 0.03);
+            width: 460px;
+            transition: border-color 0.4s ease;
         }
-        h1 {
-            font-size: 2.2rem;
-            color: #00ff00;
-            letter-spacing: 1px;
-            margin-bottom: 20px;
-            text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        
+        .network-panel h2 {
+            color: #ffffff;
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            letter-spacing: 4px;
             font-weight: 900;
+            text-align: center;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, #fff 30%, #ffa500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
+
+        /* کادر ورودی با استایل نئون مخفی */
+        .input-group {
+            margin-bottom: 20px;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 16px 20px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            background: rgba(0, 0, 0, 0.5);
+            color: #fff;
+            font-family: 'Consolas', monospace;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+        }
+        .input-group input:focus {
+            border-color: rgba(255, 75, 0, 0.6);
+            background: rgba(0, 0, 0, 0.7);
+            box-shadow: 0 0 25px rgba(255, 75, 0, 0.15), inset 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        /* دکمه اکشن شیک دارک هولوگرافیک */
         .btn {
-            display: inline-block;
-            text-decoration: none;
-            color: #00ff00;
-            background: rgba(0, 0, 0, 0.8);
-            border: 1px solid #00ff00;
-            padding: 12px 25px;
-            font-weight: bold;
-            font-size: 0.9rem;
-            border-radius: 20px;
-            letter-spacing: 1px;
-            box-shadow: 0 0 15px rgba(0, 255, 0, 0.1);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .btn:hover {
-            background: #00ff00;
-            color: #000;
-            box-shadow: 0 0 25px #00ff00, 0 0 50px rgba(0, 255, 0, 0.3);
-            transform: scale(1.05);
+            display: block; 
+            width: 100%;
+            color: #fff;
+            background: linear-gradient(135deg, #ff2a00, #ff6a00);
+            padding: 16px; 
+            font-weight: 800; 
+            font-size: 0.95rem;
+            border-radius: 16px; 
+            letter-spacing: 2px; 
+            border: none;
             cursor: pointer;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 8px 25px rgba(255, 42, 0, 0.25);
         }
-    </style>
-</head>
-<body>
-
-    <!-- بوم شبیه‌ساز جاذبه سیاه‌چاله -->
-    <canvas id="blackholeCanvas"></canvas>
-
-    <!-- هسته ثابت مرکزی -->
-    <div class="singularity-core">
-        <h1>@phrazel</h1>
-        <a href="https://t.me/phrazel" target="_blank" class="btn">ENTER VOID</a>
-    </div>
-
-    <script>
-        const canvas = document.getElementById('blackholeCanvas');
-        const ctx = canvas.getContext('2d');
-
-        let width = canvas.width = window.innerWidth;
-        let height = canvas.height = window.innerHeight;
-
-        let centerX = width / 2;
-        let centerY = height / 2;
-
-        const particleCount = 400; // تعداد ذرات کدی
-        const particles = [];
-        const chars = ['0', '1', 'Ø', 'X', 'F', 'A', '7', '9', ' ', '•'];
-
-        class Particle {
-            constructor() {
-                this.reset();
-                // توزیع رندوم اولیه در سراسر صفحه
-                this.angle = Math.random() * Math.PI * 2;
-                this.radius = Math.random() * (Math.max(width, height) / 2);
-            }
-
-            reset() {
-                this.angle = Math.random() * Math.PI * 2;
-                // شروع از لبه‌های بیرونی صفحه
-                this.radius = Math.max(width, height) / 2 + Math.random() * 100;
-                this.speed = 0.5 + Math.random() * 1.5; // سرعت حرکت به سمت مرکز
-                this.rotationSpeed = 0.01 + Math.random() * 0.02; // سرعت چرخش دایره‌ای
-                this.char = chars[Math.floor(Math.random() * chars.length)];
-                this.colorOpacity = 0.1;
-                this.fontSize = 10 + Math.random() * 8;
-            }
-
-            update() {
-                // کشیده شدن به سمت هسته مرکزی (کاهش شعاع)
-                this.radius -= this.speed;
-                // چرخش به دور مرکز
-                this.angle += this.rotationSpeed;
-
-                // درخشش بیشتر با نزدیک‌تر شدن به افق رویداد سیاه‌چاله
-                if (this.radius < 300 && this.radius > 140) {
-                    this.colorOpacity = (300 - this.radius) / 160;
-                } else if (this.radius >= 300) {
-                    this.colorOpacity = 0.15;
-                }
-
-                // اگر ذره بلعیده شد و به مرکز مطلق رسید، دوباره از بیرون متولد شود
-                if (this.radius <= 135) {
-                    this.reset();
-                }
-            }
-
-            draw() {
-                // محاسبه موقعیت کارتزینی از روی زاویه و شعاع
-                const x = centerX + Math.cos(this.angle) * this.radius;
-                const y = centerY + Math.sin(this.angle) * this.radius;
-
-                ctx.font = `${this.fontSize}px monospace`;
-                ctx.fillStyle = `rgba(0, 255, 0, ${this.colorOpacity})`;
-                ctx.fillText(this.char, x, y);
-            }
+        .btn:hover { 
+            box-shadow: 0 0 40px rgba(255, 106, 0, 0.6);
+            transform: translateY(-2px);
+        }
+        .btn:active {
+            transform: translateY(0);
         }
 
-        // ساخت ذرات اولیه
-        for (let i = 0; i < particleCount; i++) {
-            particles.push(new Particle());
+        /* تب‌های مدرن و مینیمال ترمینال */
+        .terminal-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            padding-left: 4px;
         }
-
-        // انیمیشن فریم‌ها
-        const animate = () => {
-            // افکت دنباله‌دار شدن ذرات ماتریکسی با لایه تیره مات
-            ctx.fillStyle = 'rgba(2, 2, 5, 0.15)';
-            ctx.fillRect(0, 0, width, height);
-
-            // ایجاد هاله نوری بسیار ضعیف در افق سیاه‌چاله
-            const gradient = ctx.createRadialGradient(centerX, centerY, 135, centerX, centerY, 200);
-            gradient.addColorStop(0, 'rgba(0, 0, 0, 1)');
-            gradient.addColorStop(0.5, 'rgba(0, 255, 0, 0.03)');
-            gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
-            ctx.fillStyle = gradient;
-            ctx.beginPath();
-            ctx.arc(centerX, centerY, 200, 0, Math.PI * 2);
-            ctx.fill();
-
-            particles.forEach(p => {
-                p.update();
-                p.draw();
-            });
-
-            requestAnimationFrame(animate);
-        };
-
-        // هماهنگی با تغییر سایز مرورگر یا چرخش گوشی
-        window.addEventListener('resize', () => {
-            width = canvas.width = window.innerWidth;
-            height = canvas.height = window.innerHeight;
-            centerX = width / 2;
-            centerY = height / 2;
-        });
-
-        // تاثیر حرکت موس روی مرکز ثقل سیاه‌چاله
-        window.addEventListener('mousemove', (e) => {
-            // انحراف بسیار جزیی مرکز جاذبه به سمت موس برای زنده شدن صفحه
-            centerX = (width / 2) + (e.clientX - width / 2) * 0.05;
-            centerY = (height / 2) + (e.clientY - height / 2) * 0.05;
-            
-            const core = document.querySelector('.singularity-core');
-            if(core) {
-                core.style.left = `${centerX}px`;
-                core.style.top = `${centerY}px`;
-            }
-        });
-
-        animate();
-    </script>
-</body>
-</html>
+        .tab-btn {
+            padding: 8px 18px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.04);
+            background: rgba(255,255,255,0.02);
+            color: #6
