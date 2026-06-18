@@ -1,39 +1,58 @@
 import { NextResponse } from 'next/server';
+import * as cheerio from 'cheerio'; // برای استخراج لینک‌ها از داخل کدهای HTML
 
 export async function POST(request: Request) {
   try {
     const { url } = await request.json();
 
     if (!url) {
-      return NextResponse.json({ success: false, message: 'لینک ارسال نشده است' }, { status: 400 });
+      return NextResponse.json({ success: false, message: 'لینک تیک‌تاک ارسال نشده است' }, { status: 400 });
     }
 
-    // ۱. ارسال لینک تیک‌تاک به API اختصاصی SnapTik برای پردازش
-    const snapTikResponse = await fetch('https://api.snaptik.cx/api/download', {
+    // ۱. شبیه‌سازی درخواست مرورگر و ارسال لینک به SnapTik
+    const formData = new URLSearchParams();
+    formData.append('url', url);
+
+    const snapResponse = await fetch('https://snaptik.cx/action', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Referer': 'https://snaptik.cx/'
       },
-      body: JSON.stringify({ url: url })
+      body: formData
     });
 
-    const result = await snapTikResponse.json();
+    const html = await snapResponse.text();
 
-    // ۲. استخراج لینک‌های دانلود مستقیم و بدون واترمارک از پاسخ SnapTik
-    if (result && result.success && result.data) {
+    // ۲. اسکرپ کردن و بیرون کشیدن لینک‌های دانلود از بین کدهای HTML صفحه
+    const $ = cheerio.load(html);
+    
+    // پیدا کردن دکمه‌های دانلود ویدیو بدون واترمارک
+    const videoLink = $('.download-links a.btn-download').first().attr('href') || 
+                      $('a[href*="render"]').first().attr('href') || 
+                      $('a.snaptik-button').first().attr('href');
+
+    // پیدا کردن لینک دانلود فایل صوتی (MP3)
+    const audioLink = $('a[href*=".mp3"]').first().attr('href') || 
+                      $('.download-links a.btn-audio').attr('href');
+
+    const title = $('.video-title').text().trim() || 'TikTok Video';
+
+    // ۳. اگر لینک دانلود پیدا شد، آن را به فرانت‌اند بفرست
+    if (videoLink) {
       return NextResponse.json({
         success: true,
-        title: result.data.title || 'TikTok Video',
-        video: result.data.video_hd || result.data.video || result.data.links[0], // لینک مستقیم ویدیو بدون واترمارک
-        audio: result.data.audio || result.data.music, // لینک موزیک
-        author: result.data.author?.name || 'TikTok User'
+        title: title,
+        video: videoLink.startsWith('http') ? videoLink : `https://snaptik.cx${videoLink}`,
+        audio: audioLink ? (audioLink.startsWith('http') ? audioLink : `https://snaptik.cx${audioLink}`) : null,
+        author: 'TikTok User'
       });
     }
 
-    return NextResponse.json({ success: false, message: 'SnapTik نتوانست ویدیو را پردازش کند' }, { status: 500 });
+    return NextResponse.json({ success: false, message: 'سیستم نتوانست لینک‌های دانلود را از SnapTik استخراج کند.' }, { status: 500 });
 
   } catch (error) {
-    return NextResponse.json({ success: false, message: 'خطای سرور در ارتباط با SnapTik' }, { status: 500 });
+    return NextResponse.json({ success: false, message: 'خطای سرور در پردازش مستقل' }, { status: 500 });
   }
 }
